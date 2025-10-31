@@ -35,7 +35,7 @@ std::unique_ptr<AbstractClientService> Server::forward()
         throw std::runtime_error("Backend socket creation failed: " + std::to_string(WSAGetLastError()));
     }
 
-    std::pair<std::string_view, unsigned short> backendServer = scheduler_->getNextServer();
+    std::pair<std::string_view, unsigned short> backendServer = scheduler_->peekNextServer();
 
     std::string_view backendAddress = backendServer.first;
     unsigned short backendPort = backendServer.second;

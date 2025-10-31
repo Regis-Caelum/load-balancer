@@ -19,5 +19,13 @@ public:
     ~Scheduler() = default;
 
     std::pair<std::string_view, unsigned short> getNextServer();
+    std::pair<std::string_view, unsigned short> peekNextServer()
+    {
+        if (serverQueue_.empty())
+        {
+            throw std::runtime_error("No backend servers available");
+        }
+        return serverQueue_.front();
+    }
 };
 #endif // SCHEDULER_H
