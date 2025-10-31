@@ -1,0 +1,171 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "CMake: Clean (Ninja)",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build",
+                "--target",
+                "clean"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "type": "shell",
+            "label": "CMake: Configure Server (Ninja + Clang)",
+            "command": "cmake",
+            "args": [
+                "-S",
+                ".",
+                "-B",
+                "build",
+                "-G",
+                "Ninja",
+                "-DCMAKE_C_COMPILER=clang",
+                "-DCMAKE_CXX_COMPILER=clang++",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "-DBUILD_TESTS=OFF"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "type": "shell",
+            "label": "CMake: Configure Tests (Ninja + Clang)",
+            "command": "cmake",
+            "args": [
+                "-S",
+                ".",
+                "-B",
+                "build",
+                "-G",
+                "Ninja",
+                "-DCMAKE_C_COMPILER=clang",
+                "-DCMAKE_CXX_COMPILER=clang++",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "-DBUILD_TESTS=ON"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "type": "shell",
+            "label": "CMake: Build Server (Ninja)",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build",
+                "--target",
+                "LOAD_BALANCER"
+            ],
+            "group": "build",
+            "dependsOn": "CMake: Configure Server (Ninja + Clang)",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "type": "shell",
+            "label": "CMake: Build Tests (Ninja)",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build",
+                "--target",
+                "LOAD_BALANCER_TESTS"
+            ],
+            "group": "build",
+            "dependsOn": "CMake: Configure Tests (Ninja + Clang)",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "type": "shell",
+            "label": "Run Server Executable",
+            "command": "${workspaceFolder}/build/LOAD_BALANCER.exe",
+            "group": "build",
+            "dependsOn": "CMake: Build Server (Ninja)",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "type": "shell",
+            "label": "Run Tests via CTest",
+            "command": "ctest",
+            "args": [
+                "--test-dir",
+                "${workspaceFolder}/build",
+                "--output-on-failure"
+            ],
+            "group": "test",
+            "dependsOn": "CMake: Build Tests (Ninja)",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "type": "shell",
+            "label": "Clean, Build and Run Server",
+            "dependsOn": [
+                "CMake: Clean (Ninja)",
+                "CMake: Build Server (Ninja)",
+                "Run Server Executable"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "type": "shell",
+            "label": "Clean, Build and Run Tests",
+            "dependsOn": [
+                "CMake: Clean (Ninja)",
+                "CMake: Build Tests (Ninja)",
+                "Run Tests Executable"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "type": "shell",
+            "label": "CMake: Configure Server Release",
+            "command": "cmake",
+            "args": [
+                "-S",
+                ".",
+                "-B",
+                "build_release",
+                "-G",
+                "Ninja",
+                "-DCMAKE_C_COMPILER=clang",
+                "-DCMAKE_CXX_COMPILER=clang++",
+                "-DCMAKE_BUILD_TYPE=Release",
+                "-DBUILD_TESTS=OFF"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "type": "shell",
+            "label": "CMake: Build Server Release",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build_release",
+                "--target",
+                "LOAD_BALANCER"
+            ],
+            "group": "build",
+            "dependsOn": "CMake: Configure Server Release",
+            "problemMatcher": "$gcc"
+        },
+        {
+            "type": "shell",
+            "label": "Run Tests Executable (with colors)",
+            "command": "${workspaceFolder}/build/LOAD_BALANCER_TESTS.exe",
+            "args": [
+                "--gtest_color=yes"
+            ],
+            "group": "test",
+            "dependsOn": "CMake: Build Tests (Ninja)",
+            "problemMatcher": "$gcc"
+        }
+    ]
+}
